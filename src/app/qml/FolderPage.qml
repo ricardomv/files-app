@@ -1,6 +1,7 @@
 /*
 * Files app - File manager for Papyros
 * Copyright (C) 2015 Michael Spencer <sonrisesoftware@gmail.com>
+*               2015 Ricardo Vieira <ricardo.vieira@tecnico.ulisboa.pt>
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,7 +19,6 @@
 import QtQuick 2.2
 import Material 0.1
 import Material.ListItems 0.1 as ListItem
-import "backend"
 import "components"
 
 Page {
@@ -55,8 +55,10 @@ Page {
         },
 
         Action {
-            iconName: "action/visibility"
-            name: qsTr("Properties")
+            iconName: "content/content_paste"
+            name: qsTr("Paste")
+            enabled: folderModel.model.clipboardUrlsCounter
+            onTriggered: folderModel.model.paste()
         },
 
         Action {
@@ -70,17 +72,9 @@ Page {
         }
     ]
 
-
-    rightSidebar: InfoSidebar {
-        id: infoSidebar
-    }
-
-    property var selectedFile
-
-    onSelectedFileChanged: {
-        if (selectedFile)
-            app.width = Math.max(app.width, Units.dp(1000))
-    }
+//    rightSidebar: InfoSidebar {
+//        id: infoSidebar
+//    }
 
     FolderListView {
         anchors {
@@ -102,10 +96,6 @@ Page {
         id: placesSidebar
     }
 
-    FolderModel {
-        id: folderModel
-    }
-
     Dialog {
         id: confirmNewFolder
         title: qsTr("Create new folder:")
@@ -121,5 +111,11 @@ Page {
         onRejected: nameField.text = ""
     }
 
-    Keys.onEscapePressed: selectedFile = undefined
+    Keys.onEscapePressed: selectionManager.clear()
+    Keys.onPressed: {
+        if (event.key == Qt.Key_S) {
+            infoSidebar.showing = true
+            event.accepted = true;
+        }
+    }
 }

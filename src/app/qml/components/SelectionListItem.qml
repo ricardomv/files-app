@@ -26,23 +26,20 @@ ListItem.Standard {
     id: listItem
 
     // TODO : select the right icon for file type.
-    iconName: isDir ? "file/folder" : "awesome/file"
     text: folderModel.pathTitle(filePath)
-    selected: isSelected
 
     onClicked: {
-        if (isDir) {
-            folderModel.goTo(filePath)
-        } else {
-            snackbar.open("Opening " + fileName)
-            Qt.openUrlExternally(filePath)
-        }
+        selectionManager.toggleIndex(index);
     }
 
-    onPressAndHold: {
-        // Set selection manager in multiple selection mode
-        selectionManager.mode = 1
-        selectionManager.toggleIndex(index);
+    action: CheckBox {
+        id: checkBox
+        anchors {
+            verticalCenter: parent.verticalCenter
+            left: parent.left
+        }
+        checked: isSelected
+        enabled: false
     }
 
     secondaryItem: RowLayout {
@@ -55,7 +52,8 @@ ListItem.Standard {
 
             elide: Text.ElideRight
 
-            text: folderModel.fileType(mimeType, mimeTypeDescription)
+            text: folderModel.fileType(mimeType,
+                mimeTypeDescription)
                 color: Theme.light.subTextColor
         }
 
